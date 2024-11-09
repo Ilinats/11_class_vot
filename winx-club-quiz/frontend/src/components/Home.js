@@ -1,25 +1,34 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import '../styles/Home.css';
 
 const Home = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { username } = location.state || {};
 
-  const handleQuizChoice = (gender) => {
-    if (gender === 'male') {
-      navigate('/quiz/male');  // Navigate to the men's quiz page
-    } else if (gender === 'female') {
-      navigate('/quiz/female');  // Navigate to the women's quiz page
-    }
+  const [gender, setGender] = useState(null);
+
+  const handleGenderSelection = (selectedGender) => {
+    setGender(selectedGender);
+    navigate('/quiz', {
+      state: {
+        username: username,
+        gender: selectedGender,
+      },
+    });
   };
 
+  if (!username) {
+    return <div className="error">Please log in first.</div>;
+  }
+
   return (
-    <div>
-      <h2>Welcome to the Winx Club Quiz!</h2>
-      <p>Are you a man or a woman?</p>
-      <div>
-        <button onClick={() => handleQuizChoice('male')}>Men's Quiz</button>
-        <button onClick={() => handleQuizChoice('female')}>Women's Quiz</button>
-      </div>
+    <div className="home-container">
+      <h1>Welcome, {username}</h1>
+      <h2>What is your gender?</h2>
+      <button onClick={() => handleGenderSelection('male')}>Male</button>
+      <button onClick={() => handleGenderSelection('female')}>Female</button>
     </div>
   );
 };

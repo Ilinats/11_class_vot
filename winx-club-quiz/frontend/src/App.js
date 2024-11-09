@@ -4,6 +4,8 @@ import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Home from './components/Home';
+import Quiz from './components/Quiz';
+import QuizResult from './components/QuizResult';
 
 const App = () => {
   const token = localStorage.getItem('token');
@@ -15,6 +17,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/quiz" element={<Quiz />} />
+        <Route path="/quiz-result" element={<QuizResult />} />
         {token ? (
           <Route path="/" element={<Home />} />
         ) : (

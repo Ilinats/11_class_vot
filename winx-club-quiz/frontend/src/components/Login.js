@@ -1,65 +1,59 @@
 import React, { useState } from 'react';
-import { login } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
+import '../styles/Login.css';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [token, setToken] = useState(null);
-  const navigate = useNavigate();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleLogin = () => {
+        fetch('http://localhost:5000/auth/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.token) {
+            localStorage.setItem('userToken', data.token);
 
-    try {
-      const data = await login(username, password);
-      console.log('Login response:', data);
+            navigate('/home', {
+                state: { username, token: data.token },
+            });
+            } else {
+            setError('Invalid login credentials');
+            }
+        })
+        .catch(err => setError('Error logging in.'));
+    };
 
-      if (data && data.token) {
-        localStorage.setItem('token', data.token);
-        setToken(data.token);
-        console.log('Login successful:', data.token);
-        navigate('/home');
-      } else if (data.message) {
-        setErrorMessage(data.message);
-      } else {
-        setErrorMessage('Unexpected response from server');
-        console.log('Token not found in response');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred during login');
-      console.error('Error logging in:', error);
-    }
-  };
-
-  return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input
+    return (
+        <div className="login-container">
+        <div className="login-form">
+            <h2>Login</h2>
+            <input
             type="text"
+            placeholder="Username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
+            onChange={e => setUsername(e.target.value)}
+                required
+            />
+            <input
             type="password"
+            placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             required
-          />
+            />
+            <button onClick={handleLogin}>Login</button>
+            {error && <div className="error">{error}</div>}
         </div>
-        <button type="submit">Login</button>
-      </form>
-      {errorMessage && <p>{errorMessage}</p>}
-    </div>
-  );
-};
+        </div>
+    );
+    };
 
 export default Login;
