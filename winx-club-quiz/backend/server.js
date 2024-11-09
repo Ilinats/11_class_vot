@@ -1,34 +1,18 @@
 const express = require('express');
-const { Pool } = require('pg');
-const dotenv = require('dotenv');
-
-dotenv.config();
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const authRoutes = require('./routes/authRoutes');
+require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3000;
 
-// PostgreSQL connection
-const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: 5432,
-});
+app.use(cors());
+app.use(bodyParser.json());
 
-pool.connect((err) => {
-  if (err) {
-    console.error('Database connection error:', err);
-  } else {
-    console.log('Connected to the PostgreSQL database');
-  }
-});
+app.use('/auth', authRoutes);
 
-// Basic route
-app.get('/', (req, res) => {
-  res.send('Welcome to the Winx Club Quiz App!');
-});
+const port = process.env.PORT || 5000;
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });
