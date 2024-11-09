@@ -18,11 +18,13 @@ function calculateResult(quizData, answers) {
   
     const mostSimilarCharacter = sortedCharacters[0][0];
     const characterInfo = characterDescriptions[mostSimilarCharacter];
+
+    console.log("img", characterInfo.image);
   
     return {
       character: mostSimilarCharacter,
       description: characterInfo.description || "You are unique, just like everyone else!",
-      image: characterInfo.image || null
+      image: characterInfo.image
     };
 }
 
@@ -65,13 +67,15 @@ exports.saveQuizResult = async (req, res) => {
         return res.status(200).json({
             message: 'Quiz result updated',
             result: result.character,
-            description: result.description
+            description: result.description,
+            image: result.image
         });
         } else {
             await client.query(
                 'INSERT INTO quiz_results (username, result) VALUES ($1, $2)',
                 [username, result.character]
             );
+            console.log("imgr", result.image);
             return res.status(200).json({
                 message: 'Quiz result updated',
                 result: result.character,
