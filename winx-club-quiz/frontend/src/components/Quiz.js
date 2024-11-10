@@ -75,7 +75,7 @@ const Quiz = () => {
       .then(response => response.json())
       .then(data => {
         if (data.result) {
-            console.log(data.image);
+          console.log(data.image);
           navigate('/quiz-result', {
             state: {
               username,
@@ -108,20 +108,17 @@ const Quiz = () => {
 
       <div>
         <h2>{questions[currentQuestion]?.question || 'Loading question...'}</h2>
-        <ul>
+        <div className="answers-container">
           {questions[currentQuestion]?.answers?.map((answer, index) => (
-            <li key={index}>
-              <input
-                type="radio"
-                id={`answer-${index}`}
-                name={`question-${currentQuestion}`}
-                value={answer.text}
-                onChange={() => handleAnswerChange(currentQuestion, answer)}
-              />
-              <label htmlFor={`answer-${index}`}>{answer.text}</label>
-            </li>
+            <button
+              key={index}
+              className="answer-button"
+              onClick={() => handleAnswerChange(currentQuestion, answer)}
+            >
+              {answer.text}
+            </button>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   );
