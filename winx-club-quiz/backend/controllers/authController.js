@@ -15,7 +15,7 @@ exports.signup = async (req, res) => {
       const hashedPassword = await argon2.hash(password);
       await client.query('INSERT INTO public.users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
   
-      const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ username }, config.jwtSecret, { expiresIn: '1h' });
   
       res.status(201).json({
         message: 'User created successfully',
