@@ -1,0 +1,57 @@
+version: "3.8"
+services:
+  nfs:
+    # image: itsthenetwork/nfs-server-alpine:latest
+    image: ghcr.io/normal-computing/nfs-server:latest
+    # image: gists/nfs-server
+    container_name: nfs
+    privileged: true
+    expose:
+      - 2049
+      - 111
+      - 32765-32767
+    environment:
+      - SHARED_DIRECTORY=/mnt/data
+    volumes:
+      # - ./nfs-volume:/mnt/data:rw
+      - ./nfs-volume:/mnt/data:rw
+      # - ./nfs-volume:/nfs-share
+    #ports:
+    #  - 2049:2049
+
+#   nfs-client:
+#     image: d3fk/nfs-client:v4
+#     container_name: nfs-client
+#     privileged: true
+#     networks:
+#       - internal_network
+#     environment:
+#       - SERVER=nfs
+#       - SHARE=/
+#     depends_on:
+#       - nfs
+
+
+  app:
+    build:
+      context: ./app
+    container_name: file-management-app
+    restart: unless-stopped
+    privileged: true
+    # environment:
+    #   - NFS_MOUNT=/mnt/nfs
+    # volumes:
+    #   - nfs-data:/mnt/nfs
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    depends_on:
+      - nfs
+
+# volumes:
+#   nfs-data:
+#     driver: local
+#     driver_opts:
+#       type: "nfs"
+#       o: "addr=nfs,rw"
+#       device: ":/"
