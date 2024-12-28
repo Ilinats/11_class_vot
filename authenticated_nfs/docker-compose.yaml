@@ -47,11 +47,43 @@ services:
       - "5001:5001"
     depends_on:
       - nfs
+      - keycloak
 
-# volumes:
-#   nfs-data:
-#     driver: local
-#     driver_opts:
-#       type: "nfs"
-#       o: "addr=nfs,rw"
-#       device: ":/"
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.1
+    container_name: keycloak
+    environment:
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://db:5432/keycloak
+      - KC_DB_USERNAME=keycloak
+      - KC_DB_PASSWORD=keycloak
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KEYCLOAK_HOSTNAME=localhost
+      - KC_HOSTNAME=localhost
+    ports:
+      - "8080:8080"
+    command:
+      - start-dev
+    restart: unless-stopped
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    container_name: keycloak-db
+    environment:
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=keycloak
+      - POSTGRES_DB=keycloak
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  keycloak_data:
+    driver: local
+  postgres_data:
+    driver: local
