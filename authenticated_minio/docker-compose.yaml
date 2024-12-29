@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  minio:
+    image: bitnami/minio:latest
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    networks:
+      - minionetwork
+    volumes:
+      - 'minio_data:/data'
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=admin123
+
+  app:
+    build: ./app  # Използва Dockerfile за създаване на приложението
+    container_name: file_management_app
+    ports:
+      - "5000:5000"  # Expose application on port 5000
+    environment:
+      - MINIO_ENDPOINT=minio:9000  # Свързване към MinIO
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=admin123
+    depends_on:
+      - minio  # Приложението ще стартира след MinIO
+    networks:
+      - minionetwork
+    volumes:
+      - ./app:/app
+
+networks:
+  minionetwork:
+    driver: bridge
+
+volumes:
+  minio_data:
+    driver: local
