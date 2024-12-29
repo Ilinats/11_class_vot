@@ -1,2 +1,4 @@
 Flask
 minio
+flask-jwt-extended
+python-keycloak
